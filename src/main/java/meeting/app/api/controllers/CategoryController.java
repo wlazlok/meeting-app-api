@@ -20,6 +20,12 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * Method to get all categories
+     *
+     * @return list of all categories
+     */
+
     @GetMapping("/get")
     public ResponseEntity<List<CategoryItemResponse>> getCategories() {
         CategoryItemResponse categoryItemResponse = new CategoryItemResponse();

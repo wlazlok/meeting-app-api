@@ -14,6 +14,5 @@ public class CategoryItem {
 
     private String name;
 
-    @Lob
-    private byte[] image;
+    private String cloudinaryId;
 }

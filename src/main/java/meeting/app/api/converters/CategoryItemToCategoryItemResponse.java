@@ -14,7 +14,7 @@ public class CategoryItemToCategoryItemResponse implements Converter<CategoryIte
 
         categoryItemResponse.setId(categoryItem.getId());
         categoryItemResponse.setName(categoryItem.getName());
-        categoryItemResponse.setImage(categoryItem.getImage());
+        categoryItemResponse.setCloudinaryId(categoryItem.getCloudinaryId());
 
         return categoryItemResponse;
     }

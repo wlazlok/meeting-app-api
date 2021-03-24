@@ -14,7 +14,7 @@ public class CategoryItemResponse {
 
     private Long id;
     private String name;
-    private byte[] image;
+    private String cloudinaryId;
     private List<ErrorMessage> errorMessages = new ArrayList<>();
 
 }

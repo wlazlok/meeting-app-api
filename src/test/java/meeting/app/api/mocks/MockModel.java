@@ -10,7 +10,7 @@ public class MockModel {
 
         categoryItem.setId(1L);
         categoryItem.setName("Category Item");
-        categoryItem.setImage(new byte[]{11, 12, 13, 14, 15});
+        categoryItem.setCloudinaryId("gjsdfsvnsephtuz57xww");
 
         return categoryItem;
     }
@@ -20,7 +20,7 @@ public class MockModel {
 
         categoryItemResponse.setId(1L);
         categoryItemResponse.setName("Category Item");
-        categoryItemResponse.setImage(new byte[]{11, 12, 13, 14, 15});
+        categoryItemResponse.setCloudinaryId("gjsdfsvnsephtuz57xww");
 
         return categoryItemResponse;
     }
