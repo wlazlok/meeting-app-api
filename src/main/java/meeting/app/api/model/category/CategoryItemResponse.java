@@ -1,9 +1,6 @@
 package meeting.app.api.model.category;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import meeting.app.api.model.utils.ErrorMessage;
 
 import java.util.ArrayList;
