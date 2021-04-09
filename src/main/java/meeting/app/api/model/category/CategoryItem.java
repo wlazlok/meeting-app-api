@@ -1,8 +1,10 @@
 package meeting.app.api.model.category;
 
 import lombok.Data;
+import meeting.app.api.model.event.EventItem;
 
 import javax.persistence.*;
+import java.util.*;
 
 @Data
 @Entity
@@ -15,4 +17,7 @@ public class CategoryItem {
     private String name;
 
     private String cloudinaryId;
+
+    @OneToMany(mappedBy = "categoryId")
+    private List<EventItem> events = new ArrayList<>();
 }

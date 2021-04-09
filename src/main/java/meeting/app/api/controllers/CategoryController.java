@@ -1,5 +1,6 @@
 package meeting.app.api.controllers;
 
+import meeting.app.api.model.category.CartCategoryItemResponse;
 import meeting.app.api.model.category.CategoryItemResponse;
 import meeting.app.api.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,18 @@ public class CategoryController {
         } catch (Exception ex) {
             categoryItemResponse.setErrorMessages(Arrays.asList(mapErrorMessage(ex)));
             return ResponseEntity.badRequest().body(Arrays.asList(categoryItemResponse));
+        }
+    }
+
+    @GetMapping("/get/carts")
+    public ResponseEntity<CartCategoryItemResponse> getCartCategories() {
+        CartCategoryItemResponse response = new CartCategoryItemResponse();
+        try {
+            response.setCartCategoryItems(categoryService.getAllCartCategoryItems());
+            return  ResponseEntity.ok().body(response);
+        } catch (Exception ex) {
+            response.setErrorMessage(mapErrorMessage(ex));
+            return ResponseEntity.badRequest().body(response);
         }
     }
 }

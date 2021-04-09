@@ -1,12 +1,13 @@
 package meeting.app.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import meeting.app.api.ControllerMockConfig;
+import meeting.app.api.model.category.CartCategoryItem;
+import meeting.app.api.model.category.CartCategoryItemResponse;
 import meeting.app.api.model.category.CategoryItemResponse;
-import meeting.app.api.services.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,24 +17,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
+import static meeting.app.api.mocks.MockModel.generateCartCategoryItem;
 import static meeting.app.api.mocks.MockModel.generateCategoryItemResponse;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CategoryControllerTest {
+public class CategoryControllerTest extends ControllerMockConfig {
 
     private final String PATH = "/api/category";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private MockMvc mockMvc;
-
-    @Mock
-    private CategoryService categoryService;
 
     @InjectMocks
     private CategoryController controller;
@@ -85,5 +83,49 @@ public class CategoryControllerTest {
 
         assertNotNull(response);
         verify(categoryService, times(1)).getAllCategories();
+    }
+
+    /**
+     * getCartCategories() method
+     * 1. getCartCategories OK
+     * 2. getCartCategories throw Exception
+     */
+
+    @Test
+    void getCartCategories() throws Exception {
+        CartCategoryItem cartCategoryItem = generateCartCategoryItem();
+
+        when(categoryService.getAllCartCategoryItems()).thenReturn(Arrays.asList(cartCategoryItem));
+
+        MvcResult mvcResult = mockMvc.perform(get(PATH + "/get/carts")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        CartCategoryItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), CartCategoryItemResponse.class);
+
+        assertNotNull(response);
+        assertFalse(response.getCartCategoryItems().isEmpty());
+        assertNull(response.getErrorMessage());
+        verify(categoryService, times(1)).getAllCartCategoryItems();
+    }
+
+    @Test
+    void getCartCategoriesThrowException() throws Exception {
+        given(categoryService.getAllCartCategoryItems()).willAnswer(invocationOnMock -> {
+            throw new Exception();
+        });
+
+        MvcResult mvcResult = mockMvc.perform(get(PATH + "/get/carts")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        CartCategoryItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), CartCategoryItemResponse.class);
+
+        assertNotNull(response);
+        assertNull(response.getCartCategoryItems());
+        assertNotNull(response.getErrorMessage());
+        verify(categoryService, times(1)).getAllCartCategoryItems();
     }
 }

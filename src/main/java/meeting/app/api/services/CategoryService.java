@@ -1,8 +1,11 @@
 package meeting.app.api.services;
 
 import lombok.extern.slf4j.Slf4j;
+import meeting.app.api.converters.CategoryItemToCartCategoryItem;
 import meeting.app.api.converters.CategoryItemToCategoryItemResponse;
 import meeting.app.api.exceptions.MeetingApiException;
+import meeting.app.api.model.category.CartCategoryItem;
+import meeting.app.api.model.category.CartCategoryItemResponse;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.category.CategoryItemResponse;
 import meeting.app.api.repositories.CategoryItemRepository;
@@ -21,6 +24,9 @@ public class CategoryService {
 
     @Autowired
     private CategoryItemToCategoryItemResponse categoryItemToCategoryItemResponse;
+
+    @Autowired
+    private CategoryItemToCartCategoryItem categoryItemToCartCategoryItem;
 
     public CategoryItemResponse saveCategory(CategoryItem categoryItem) {
         CategoryItem savedCategory;
@@ -45,6 +51,22 @@ public class CategoryService {
         } catch (Exception e) {
             log.info("category.service.getCategories.exception: " + e.getMessage());
             throw new MeetingApiException("msg.err.category.get.categories.exception");
+        }
+
+        return categories;
+    }
+
+    public List<CartCategoryItem> getAllCartCategoryItems() {
+        List<CartCategoryItem> categories = new ArrayList<>();
+
+        try {
+            Iterable<CategoryItem> categoriesFound = categoryItemRepository.findAll();
+            for (CategoryItem categoryItem : categoriesFound) {
+                categories.add(categoryItemToCartCategoryItem.convert(categoryItem));
+            }
+        } catch (Exception e) {
+            log.info("category.service.getAllCartCategoryItems.exception " + e.getMessage());
+            throw new MeetingApiException("msg.err.category.get.all.cart.categories");
         }
 
         return categories;
