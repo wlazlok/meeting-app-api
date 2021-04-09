@@ -1,7 +1,6 @@
 package meeting.app.api.converters;
 
 import meeting.app.api.ConverterConfig;
-import meeting.app.api.mocks.MockModel;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.category.CategoryItemResponse;
 import org.junit.jupiter.api.Test;

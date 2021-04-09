@@ -5,7 +5,6 @@ import meeting.app.api.converters.CategoryItemToCartCategoryItem;
 import meeting.app.api.converters.CategoryItemToCategoryItemResponse;
 import meeting.app.api.exceptions.MeetingApiException;
 import meeting.app.api.model.category.CartCategoryItem;
-import meeting.app.api.model.category.CartCategoryItemResponse;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.category.CategoryItemResponse;
 import meeting.app.api.repositories.CategoryItemRepository;

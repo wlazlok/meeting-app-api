@@ -58,19 +58,29 @@ public class LoadFakeData implements CommandLineRunner {
                 .comments(Arrays.asList(commentItem))
                 .build();
 
+        EventItem eventItem_2 = EventItem.builder()
+                .city("Warszawa")
+                .street("Warszawska 11")
+                .date(new Date())
+                .description("description event 2")
+                .active(false)
+                .maxParticipants(14)
+                .build();
+
         commentItemRepository.save(commentItem);
-        eventItemRepository.save(eventItem);
+        eventItemRepository.saveAll(Arrays.asList(eventItem, eventItem_2));
 
         commentItem.setEventItem(eventItem);
 
         commentItemRepository.save(commentItem);
 
-        categoryItem.setEvents(Arrays.asList(eventItem));
+        categoryItem.setEvents(Arrays.asList(eventItem, eventItem_2));
 
         categoryItemRepository.save(categoryItem);
 
         eventItem.setCategoryId(categoryItem);
+        eventItem_2.setCategoryId(categoryItem);
 
-        eventItemRepository.save(eventItem);
+        eventItemRepository.saveAll(Arrays.asList(eventItem, eventItem_2));
     }
 }

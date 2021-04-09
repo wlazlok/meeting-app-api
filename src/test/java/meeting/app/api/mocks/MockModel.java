@@ -6,6 +6,7 @@ import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.category.CategoryItemResponse;
 import meeting.app.api.model.comment.CommentItem;
 import meeting.app.api.model.event.EventItem;
+import meeting.app.api.model.event.EventItemListElement;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -60,6 +61,15 @@ public class MockModel {
             return CartCategoryItemResponse.builder()
                     .cartCategoryItems(Arrays.asList(generateCartCategoryItem()))
                     .build();
+    }
+
+    public static EventItemListElement generateEventItemListElement() {
+        return EventItemListElement.builder()
+                .id(5L)
+                .date(new Date())
+                .city("Cracow")
+                .maxParticipants(5)
+                .build();
     }
 
 }
