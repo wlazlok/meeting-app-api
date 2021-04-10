@@ -1,6 +1,8 @@
 package meeting.app.api.configuration.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import meeting.app.api.configuration.JWT.JwtConfig;
+import meeting.app.api.configuration.JWT.JwtTokenVerifier;
+import meeting.app.api.configuration.JWT.JwtUsernameAndPasswordAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,20 +14,51 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.crypto.SecretKey;
+
+import static meeting.app.api.configuration.security.Role.ADMIN;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final UserSecurityService userSecurityService;
+    private final SecretKey secretKey;
+    private final JwtConfig jwtConfig;
 
-    @Autowired
-    private UserSecurityService userSecurityService;
+    public SecurityConfig(PasswordEncoder passwordEncoder, UserSecurityService userSecurityService, SecretKey secretKey, JwtConfig jwtConfig) {
+        this.passwordEncoder = passwordEncoder;
+        this.userSecurityService = userSecurityService;
+        this.secretKey = secretKey;
+        this.jwtConfig = jwtConfig;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        /**
+         * JWT
+         */
+/*        http
+                .csrf().disable()
+                .headers().frameOptions().disable()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), jwtConfig, secretKey))
+                .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthFilter.class)
+                .authorizeRequests()
+                .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
+//                .antMatchers("/api/**").hasRole(Role.ADMIN.name())
+//                .anyRequest()
+//                .permitAll();
+                .anyRequest()
+                .authenticated();
+*/
+
         http
                 .csrf().disable()
                 .headers().frameOptions().disable()
@@ -38,6 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
     }
 
     @Override

@@ -27,7 +27,21 @@ public class UserService {
         }
     }
 
+    public UserEntity getUserFromContextJWT() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof String) {
+            return getUserByUsername((String) principal);
+        } else {
+            log.info("user.service.get.user.context.exception");
+            throw new MeetingApiException("msg.err.get.user.from.context.error");
+        }
+    }
+
     public UserEntity getUserById(Long id) {
         return userRepository.getById(id);
+    }
+
+    public UserEntity getUserByUsername(String username) {
+        return userRepository.getByUsername(username);
     }
 }
