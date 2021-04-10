@@ -1,32 +1,35 @@
 package meeting.app.api.controllers;
 
-import meeting.app.api.model.event.EventItemListElementResponse;
-import meeting.app.api.model.event.EventItemResponse;
-import meeting.app.api.services.EventService;
+import meeting.app.api.model.comment.CommentItemResponse;
+import meeting.app.api.model.user.UserEntity;
+import meeting.app.api.services.CommentService;
+import meeting.app.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static meeting.app.api.utils.HandleErrorMessage.mapErrorMessage;
 
 @RestController
-@RequestMapping("/api/event")
-public class EventController {
+@RequestMapping("/api/comment")
+public class CommentController {
 
     @Autowired
-    private EventService eventService;
+    private CommentService commentService;
+
+    @Autowired
+    private UserService userService;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping
-    public ResponseEntity<EventItemResponse> getAllEvents() {
-        EventItemResponse response = new EventItemResponse();
+    @GetMapping("/all")
+    public ResponseEntity<CommentItemResponse> getAllComments() {
+        CommentItemResponse response = new CommentItemResponse();
 
         try {
-            response.setEventItem(eventService.getAllEvents());
+            response.setCommentItemList(commentService.getAllComments());
             return ResponseEntity.ok().body(response);
         } catch (Exception ex) {
             response.setErrorMessage(mapErrorMessage(ex));
@@ -34,12 +37,13 @@ public class EventController {
         }
     }
 
-    @GetMapping("/list/{categoryId}")
-    public ResponseEntity<EventItemListElementResponse> getEventsForCategory(@PathVariable("categoryId") String categoryId) {
-        EventItemListElementResponse response = new EventItemListElementResponse();
+    @GetMapping("/user")
+    public ResponseEntity<CommentItemResponse> getCommentsForUser() {
+        CommentItemResponse response = new CommentItemResponse();
 
         try {
-            response.setEventItemListElementList(eventService.getEventsForCategory(Long.valueOf(categoryId)));
+            UserEntity contextUser = userService.getUserFromContext();
+            response.setCommentItemList(commentService.getCommentsForUser(contextUser));
             return ResponseEntity.ok().body(response);
         } catch (Exception ex) {
             response.setErrorMessage(mapErrorMessage(ex));

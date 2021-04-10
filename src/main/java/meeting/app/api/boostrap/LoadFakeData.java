@@ -1,15 +1,17 @@
 package meeting.app.api.boostrap;
 
+import meeting.app.api.configuration.security.Role;
 import meeting.app.api.model.category.CategoryItem;
-import meeting.app.api.model.category.CategoryItemResponse;
 import meeting.app.api.model.comment.CommentItem;
 import meeting.app.api.model.event.EventItem;
+import meeting.app.api.model.user.UserEntity;
 import meeting.app.api.repositories.CategoryItemRepository;
 import meeting.app.api.repositories.CommentItemRepository;
 import meeting.app.api.repositories.EventItemRepository;
-import meeting.app.api.services.CategoryService;
+import meeting.app.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -27,10 +29,18 @@ public class LoadFakeData implements CommandLineRunner {
     @Autowired
     private CommentItemRepository commentItemRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public void run(String... args) throws Exception {
+        UserEntity userEntity = loadFakeUser();
         CategoryItem categoryItem = loadCategoryItem();
-        loadEventItemWithComment(categoryItem);
+        loadEventItemWithComment(categoryItem, userEntity);
+        loadAdminUser();
     }
 
     public CategoryItem loadCategoryItem() {
@@ -42,10 +52,15 @@ public class LoadFakeData implements CommandLineRunner {
         return categoryItemRepository.save(categoryItem);
     }
 
-    public void loadEventItemWithComment(CategoryItem categoryItem) {
+    public void loadEventItemWithComment(CategoryItem categoryItem, UserEntity userEntity) {
         CommentItem commentItem = CommentItem.builder()
                 .date(new Date())
-                .content("content")
+                .content("comment #1")
+                .build();
+
+        CommentItem commentItem_2 = CommentItem.builder()
+                .date(new Date())
+                .content("comment #2")
                 .build();
 
         EventItem eventItem = EventItem.builder()
@@ -71,8 +86,11 @@ public class LoadFakeData implements CommandLineRunner {
         eventItemRepository.saveAll(Arrays.asList(eventItem, eventItem_2));
 
         commentItem.setEventItem(eventItem);
+        commentItem_2.setEventItem(eventItem_2);
+        commentItem.setUserEntity(userEntity);
+        commentItem_2.setUserEntity(userEntity);
 
-        commentItemRepository.save(commentItem);
+        commentItemRepository.saveAll(Arrays.asList(commentItem, commentItem_2));
 
         categoryItem.setEvents(Arrays.asList(eventItem, eventItem_2));
 
@@ -82,5 +100,36 @@ public class LoadFakeData implements CommandLineRunner {
         eventItem_2.setCategoryId(categoryItem);
 
         eventItemRepository.saveAll(Arrays.asList(eventItem, eventItem_2));
+
+        userEntity.setComments(Arrays.asList(commentItem, commentItem_2));
+        userRepository.save(userEntity);
+    }
+
+    public UserEntity loadFakeUser() {
+        UserEntity userEntity = UserEntity.builder()
+                .password(passwordEncoder.encode("test"))
+                .username("test")
+                .role(Role.USER)
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isEnabled(true)
+                .build();
+
+        return userRepository.save(userEntity);
+    }
+
+    public void loadAdminUser() {
+        UserEntity userEntity = UserEntity.builder()
+                .password(passwordEncoder.encode("admin"))
+                .username("admin")
+                .role(Role.ADMIN)
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isEnabled(true)
+                .build();
+
+        userRepository.save(userEntity);
     }
 }

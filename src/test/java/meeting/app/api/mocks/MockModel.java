@@ -7,6 +7,7 @@ import meeting.app.api.model.category.CategoryItemResponse;
 import meeting.app.api.model.comment.CommentItem;
 import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.event.EventItemListElement;
+import meeting.app.api.model.user.UserEntity;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -58,9 +59,9 @@ public class MockModel {
     }
 
     public static CartCategoryItemResponse generateCartCategoryItemResponse() {
-            return CartCategoryItemResponse.builder()
-                    .cartCategoryItems(Arrays.asList(generateCartCategoryItem()))
-                    .build();
+        return CartCategoryItemResponse.builder()
+                .cartCategoryItems(Arrays.asList(generateCartCategoryItem()))
+                .build();
     }
 
     public static EventItemListElement generateEventItemListElement() {
@@ -69,6 +70,29 @@ public class MockModel {
                 .date(new Date())
                 .city("Cracow")
                 .maxParticipants(5)
+                .build();
+    }
+
+    public static UserEntity generateUserEntity() {
+        return UserEntity.builder()
+                .password("test")
+                .username("test")
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isEnabled(true)
+                .build();
+    }
+
+    public static CommentItem generateCommentItem() {
+        EventItem eventItem = generateEventItem();
+        UserEntity userEntity = generateUserEntity();
+
+        return CommentItem.builder()
+                .date(new Date())
+                .userEntity(userEntity)
+                .content("content")
+                .eventItem(eventItem)
                 .build();
     }
 

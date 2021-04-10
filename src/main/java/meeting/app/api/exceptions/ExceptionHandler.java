@@ -11,4 +11,9 @@ public class ExceptionHandler {
     public ResponseEntity<Object> handleMeetingApiException(String msg) {
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(String msg) {
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    }
 }
