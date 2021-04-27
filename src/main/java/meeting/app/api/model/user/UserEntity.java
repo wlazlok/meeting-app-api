@@ -49,6 +49,10 @@ public class UserEntity implements UserDetails {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<CommentItem> comments;
 
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<CommentItem> ratings;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();

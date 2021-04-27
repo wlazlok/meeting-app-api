@@ -8,8 +8,11 @@ import meeting.app.api.model.comment.CommentItem;
 import meeting.app.api.model.comment.CommentItemRequest;
 import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.event.EventItemListElement;
+import meeting.app.api.model.event.EventItemResponse;
+import meeting.app.api.model.rating.RatingItem;
 import meeting.app.api.model.user.UserEntity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -45,6 +48,17 @@ public class MockModel {
                 .build();
     }
 
+    public static RatingItem generateRatingItem() {
+        EventItem eventItem = generateEventItem();
+        UserEntity userEntity = generateUserEntity();
+
+        return RatingItem.builder()
+                .rating(5)
+                .eventItem(eventItem)
+                .userEntity(userEntity)
+                .build();
+    }
+
     public static EventItem generateEventItem() {
         return EventItem.builder()
                 .id(10L)
@@ -56,6 +70,7 @@ public class MockModel {
                 .maxParticipants(5)
                 .comments(Arrays.asList(new CommentItem()))
                 .categoryId(generateCategoryItem())
+                .ratings(new ArrayList<>())
                 .build();
     }
 
@@ -101,6 +116,15 @@ public class MockModel {
         return CommentItemRequest.builder()
                 .content("test")
                 .eventId(5L)
+                .build();
+    }
+    
+    public static EventItemResponse generateEventItemResponse() {
+        EventItem eventItem = generateEventItem();
+
+        return EventItemResponse.builder()
+                .eventItem(Arrays.asList(eventItem))
+                .errorMessage(null)
                 .build();
     }
 }

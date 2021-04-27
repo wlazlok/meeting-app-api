@@ -6,6 +6,7 @@ import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.event.EventItemListElement;
 import meeting.app.api.model.event.EventItemListElementResponse;
 import meeting.app.api.model.event.EventItemResponse;
+import meeting.app.api.model.user.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,12 +18,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
-import static meeting.app.api.mocks.MockModel.generateEventItem;
-import static meeting.app.api.mocks.MockModel.generateEventItemListElement;
+import static meeting.app.api.mocks.MockModel.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class EventControllerTest extends ControllerMockConfig {
@@ -132,4 +133,85 @@ public class EventControllerTest extends ControllerMockConfig {
         assertNotNull(response.getErrorMessage());
         verify(eventService, times(1)).getEventsForCategory(anyLong());
     }
-}
+
+    /**
+     * addRatingToEvent()
+     */
+    
+    @Test
+    void addRatingToEventPass() throws Exception {
+        Integer rating = 5;
+        Long eventId = 5L;
+        UserEntity userEntity = generateUserEntity();
+        EventItemResponse eventItemResponse = generateEventItemResponse();
+
+        when(userService.getUserFromContext()).thenReturn(userEntity);
+        when(eventService.addRatingToEvent(anyInt(), anyLong(), any(UserEntity.class))).thenReturn(eventItemResponse);
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/add/rating/{eventId}/{rating}", eventId, rating)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        EventItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventItemResponse.class);
+
+        assertNotNull(response);
+        assertFalse(response.getEventItem().isEmpty());
+        verify(userService, times(1)).getUserFromContext();
+    }
+
+    @Test
+    void addRatingToEventThrowException() throws Exception {
+        Integer rating = 5;
+        Long eventId = 5L;
+
+        given(userService.getUserFromContext()).willAnswer(invocationOnMock -> {
+            throw new Exception();
+        });
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/add/rating/{eventId}/{rating}", eventId, rating)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        EventItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventItemResponse.class);
+
+        assertNotNull(response);
+        assertNotNull(response.getErrorMessage());
+        verify(userService, times(1)).getUserFromContext();
+    }
+
+    @Test
+    void addRatingToEventRatingIsLessThen0() throws Exception {
+        Integer rating = 0;
+        Long eventId = 5L;
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/add/rating/{eventId}/{rating}", eventId, rating)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        EventItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventItemResponse.class);
+
+        assertNotNull(response);
+        assertNotNull(response.getErrorMessage());
+        verify(userService, times(0)).getUserFromContext();
+    }
+
+    @Test
+    void addRatingToEventRatingIsGreaterThen5() throws Exception {
+        Integer rating = 10;
+        Long eventId = 5L;
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/add/rating/{eventId}/{rating}", eventId, rating)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        EventItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventItemResponse.class);
+
+        assertNotNull(response);
+        assertNotNull(response.getErrorMessage());
+        verify(userService, times(0)).getUserFromContext();
+    }
+ }

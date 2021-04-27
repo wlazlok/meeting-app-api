@@ -4,6 +4,8 @@ import meeting.app.api.ServiceMockConfig;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.event.EventItemListElement;
+import meeting.app.api.model.event.EventItemResponse;
+import meeting.app.api.model.user.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -115,6 +117,63 @@ public class EventServiceTest extends ServiceMockConfig {
             assertEquals("msg.err.event.get.events.for.category", ex.getMessage());
             verify(categoryItemRepository, times(1)).findById(anyLong());
             verify(eventItemToEventItemListElement, times(0)).convert(any(EventItem.class));
+        }
+    }
+
+    /**
+     * addRatingToEvent()
+     */
+
+    @Test
+    void addRatingToEventPass() {
+        Integer rating = 5;
+        Long eventId = 5L;
+        UserEntity userEntity = generateUserEntity();
+        EventItem eventItem = generateEventItem();
+
+        when(eventItemRepository.getById(anyLong())).thenReturn(eventItem);
+        when(eventItemRepository.save(any(EventItem.class))).thenReturn(eventItem);
+
+        EventItemResponse result = underTest.addRatingToEvent(rating, eventId, userEntity);
+
+        assertNotNull(result);
+        verify(eventItemRepository, times(1)).getById(anyLong());
+        verify(eventItemRepository, times(1)).save(any(EventItem.class));
+    }
+
+    @Test
+    void addRatingToEventThrowException() {
+        Integer rating = 5;
+        Long eventId = 5L;
+        UserEntity userEntity = generateUserEntity();
+
+        given(eventItemRepository.getById(anyLong())).willAnswer(invocationOnMock -> {
+            throw new Exception();
+        });
+
+        try {
+            underTest.addRatingToEvent(rating, eventId, userEntity);
+            fail("Test should throw exception");
+        } catch (Exception ex) {
+            verify(eventItemRepository, times(1)).getById(anyLong());
+            verify(eventItemRepository, times(0)).save(any(EventItem.class));
+        }
+    }
+
+    @Test
+    void addRatingToEventAndEventItemIsNull() {
+        Integer rating = 5;
+        Long eventId = 5L;
+        UserEntity userEntity = generateUserEntity();
+
+        when(eventItemRepository.getById(anyLong())).thenReturn(null);
+
+        try {
+            underTest.addRatingToEvent(rating, eventId, userEntity);
+            fail("Test should throw exception");
+        } catch (Exception ex) {
+            verify(eventItemRepository, times(1)).getById(anyLong());
+            verify(eventItemRepository, times(0)).save(any(EventItem.class));
         }
     }
 }

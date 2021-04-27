@@ -21,6 +21,8 @@ public class EventItemListElement {
 
     private int maxParticipants;
 
+    private Integer ratting;
+
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     private Date date;

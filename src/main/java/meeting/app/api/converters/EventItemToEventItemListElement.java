@@ -15,6 +15,7 @@ public class EventItemToEventItemListElement implements Converter<EventItem, Eve
                 .city(eventItem.getCity())
                 .date(eventItem.getDate())
                 .maxParticipants(eventItem.getMaxParticipants())
+                .ratting(eventItem.getRating())
                 .build();
     }
 }

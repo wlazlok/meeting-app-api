@@ -24,4 +24,22 @@ public class HandleErrorMessage {
                 .status(HttpStatus.BAD_REQUEST)
                 .build();
     }
+
+    public static ErrorMessage mapErrorCode(String errorCode) {
+        final Locale locale = new Locale("pl", "PL");
+        final ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+        String errorMessage = "";
+
+        try {
+            errorMessage = bundle.getString(errorCode);
+        } catch (Exception e) {
+            errorMessage = "Niezidentyfikowany błąd";
+        }
+
+        return new ErrorMessage().builder()
+                .errorMessage(errorMessage)
+                .errorCode(errorCode)
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+    }
 }

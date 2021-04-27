@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.comment.CommentItem;
+import meeting.app.api.model.rating.RatingItem;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -57,4 +58,9 @@ public class EventItem {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryItem categoryId;
+
+    private Integer rating = 0;
+
+    @OneToMany(mappedBy = "eventItem")
+    private List<RatingItem> ratings = new ArrayList<>();
 }
