@@ -16,13 +16,6 @@ public class ImageController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
-    /**
-     * Method to uploading images for category
-     *
-     * @param file
-     * @return public_id for image
-     */
-
     @PostMapping("/upload")
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
         try {

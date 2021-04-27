@@ -23,12 +23,6 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    /**
-     * Method to get all categories
-     *
-     * @return list of all categories
-     */
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/get")
     public ResponseEntity<List<CategoryItemResponse>> getCategories() {

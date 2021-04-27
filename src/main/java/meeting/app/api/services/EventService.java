@@ -60,7 +60,7 @@ public class EventService {
 
             return events;
         } catch (Exception ex) {
-            log.info("event.service.getEventsForCategory.exception " + ex.getMessage());
+            log.info("event.service.getEventsForCategory.exception {}", ex.getStackTrace());
             throw new MeetingApiException("msg.err.event.get.events.for.category");
         }
     }
