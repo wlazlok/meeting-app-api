@@ -3,6 +3,7 @@ package meeting.app.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import meeting.app.api.ControllerMockConfig;
 import meeting.app.api.model.comment.CommentItem;
+import meeting.app.api.model.comment.CommentItemRequest;
 import meeting.app.api.model.comment.CommentItemResponse;
 import meeting.app.api.model.user.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +17,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
-import static meeting.app.api.mocks.MockModel.generateCommentItem;
-import static meeting.app.api.mocks.MockModel.generateUserEntity;
+import static meeting.app.api.controllers.MapObject.asJsonString;
+import static meeting.app.api.mocks.MockModel.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class CommentControllerTest extends ControllerMockConfig {
@@ -134,5 +136,103 @@ public class CommentControllerTest extends ControllerMockConfig {
         assertNotNull(response.getErrorMessage());
         verify(userService, times(1)).getUserFromContext();
         verify(commentService, times(1)).getCommentsForUser(any(UserEntity.class));
+    }
+
+    /**
+     * getCommentsForEvent()
+     */
+
+    @Test
+    void getCommentsPass() throws Exception {
+        String eventId = "5";
+        CommentItemResponse commentItemResponse = new CommentItemResponse();
+        commentItemResponse.setCommentItemList(Arrays.asList(generateCommentItem()));
+
+        when(commentService.getCommentsForEvent(anyLong())).thenReturn(commentItemResponse);
+
+        MvcResult mvcResult = mockMvc.perform(get(PATH + "/event/{eventId}", eventId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        CommentItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), CommentItemResponse.class);
+
+        assertNotNull(response);
+        assertFalse(response.getCommentItemList().isEmpty());
+        assertEquals(1, response.getCommentItemList().size());
+        verify(commentService, times(1)).getCommentsForEvent(anyLong());
+    }
+
+    @Test
+    void getCommentsThrowException() throws Exception {
+        String eventId = "12345";
+
+        given(commentService.getCommentsForEvent(anyLong())).willAnswer(invocationOnMock -> {
+            throw new Exception("exception");
+        });;
+
+        MvcResult mvcResult = mockMvc.perform(get(PATH + "/event/{eventId}", eventId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        CommentItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), CommentItemResponse.class);
+
+        assertNotNull(response);
+        assertNull(response.getCommentItemList());
+        assertNotNull(response.getErrorMessage());
+        verify(commentService, times(1)).getCommentsForEvent(anyLong());
+    }
+
+    /**
+     * addCommentToEvent()
+     */
+
+    @Test
+    void addCommentToEventPass() throws Exception {
+        CommentItemRequest commentItemRequest = generateCommentItemRequest();
+        UserEntity userEntity = generateUserEntity();
+        CommentItem commentItem = generateCommentItem();
+
+        when(userService.getUserFromContext()).thenReturn(userEntity);
+        when(commentService.addCommentToEvent(anyString(), anyLong(), any(UserEntity.class))).thenReturn(commentItem);
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(commentItemRequest)))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        CommentItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), CommentItemResponse.class);
+
+        assertNotNull(response);
+        assertFalse(response.getCommentItemList().isEmpty());
+        verify(userService, times(1)).getUserFromContext();
+        verify(commentService, times(1)).addCommentToEvent(anyString(), anyLong(), any(UserEntity.class));
+    }
+
+    @Test
+    void addCommentToEventPassThrowException() throws Exception {
+        CommentItemRequest commentItemRequest = generateCommentItemRequest();
+        UserEntity userEntity = generateUserEntity();
+        CommentItem commentItem = generateCommentItem();
+
+        when(userService.getUserFromContext()).thenReturn(userEntity);
+        given(commentService.addCommentToEvent(anyString(), anyLong(), any(UserEntity.class))).willAnswer(invocationOnMock -> {
+            throw new Exception("exception");
+        });;
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(commentItemRequest)))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        CommentItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), CommentItemResponse.class);
+
+        assertNotNull(response);
+        assertNotNull(response.getErrorMessage());
+        verify(userService, times(1)).getUserFromContext();
+        verify(commentService, times(1)).addCommentToEvent(anyString(), anyLong(), any(UserEntity.class));
     }
 }

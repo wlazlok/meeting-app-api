@@ -5,6 +5,7 @@ import meeting.app.api.model.category.CartCategoryItemResponse;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.category.CategoryItemResponse;
 import meeting.app.api.model.comment.CommentItem;
+import meeting.app.api.model.comment.CommentItemRequest;
 import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.event.EventItemListElement;
 import meeting.app.api.model.user.UserEntity;
@@ -96,4 +97,10 @@ public class MockModel {
                 .build();
     }
 
+    public static CommentItemRequest generateCommentItemRequest() {
+        return CommentItemRequest.builder()
+                .content("test")
+                .eventId(5L)
+                .build();
+    }
 }
