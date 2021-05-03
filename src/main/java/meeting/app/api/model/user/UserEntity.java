@@ -12,9 +12,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.Collection;
 import java.util.*;
 
+@Table(name = "USERS")
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -34,6 +36,9 @@ public class UserEntity implements UserDetails {
 
     private String username;
 
+    @Email
+    private String email;
+
     private boolean isAccountNonExpired;
 
     private boolean isAccountNonLocked;
@@ -41,6 +46,8 @@ public class UserEntity implements UserDetails {
     private boolean isCredentialsNonExpired;
 
     private boolean isEnabled;
+
+    private UUID activateAccountUUID;
 
     @Enumerated(EnumType.STRING)
     private Role role;
