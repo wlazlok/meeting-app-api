@@ -92,7 +92,10 @@ public class UserService {
         }
         try {
             userEntity.setEnabled(true);
+            userEntity.setAccountNonLocked(true);
+            userEntity.setCredentialsNonExpired(true);
             userEntity.setActivateAccountUUID(null);
+            userEntity.setAccountNonExpired(true);
             userRepository.save(userEntity);
         } catch (Exception ex) {
             log.info("user.service.activate.user.exception " + ex.getMessage());
