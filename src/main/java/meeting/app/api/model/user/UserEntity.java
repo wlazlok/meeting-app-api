@@ -49,6 +49,8 @@ public class UserEntity implements UserDetails {
 
     private UUID activateAccountUUID;
 
+    private UUID resetPasswordUUID;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

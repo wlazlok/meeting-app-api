@@ -20,7 +20,7 @@ public class EmailService {
     private final String from = "";
     private final String password = "";
 
-    public void sendEmail(UserEntity user, String path) {
+    public void sendActivateEmail(UserEntity user, String path) {
         Session session = setUp();
 
         MimeMessage message = new MimeMessage(session);
@@ -44,8 +44,36 @@ public class EmailService {
         }
     }
 
+    public void sendResetEmail(UserEntity user, String path) {
+        Session session = setUp();
+
+        MimeMessage message = new MimeMessage(session);
+
+        try {
+            message.setFrom(new InternetAddress(from));
+            InternetAddress[] toAddress = new InternetAddress[1];
+            toAddress[0] = new InternetAddress(user.getEmail());
+            message.addRecipient(Message.RecipientType.TO, toAddress[0]);
+
+            message.setSubject("Resetowanei hasła");
+            message.setText("Kliknij w poniższy link aby zresetować hasło: \n" + generateResetPasswordLink(user.getResetPasswordUUID().toString(), path, String.valueOf(user.getId())));
+
+            Transport transport = session.getTransport("smtp");
+
+            transport.connect(host, from, password);
+            transport.sendMessage(message, message.getAllRecipients());
+            transport.close();
+        } catch (MessagingException | MalformedURLException ae) {
+            ae.printStackTrace();
+        }
+    }
+
     public URL generateActivateLink(String uuid, String path, String userId) throws MalformedURLException {
         return new URL("http://localhost:8080/api/user/activate?id=" + uuid + "&usr=" + userId);
+    }
+
+    public URL generateResetPasswordLink(String uuid, String path, String userId) throws MalformedURLException {
+        return new URL("http://localhost:8080/api/user/change?id=" + uuid + "&usr=" + userId);
     }
 
     private Session setUp() {

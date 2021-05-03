@@ -3,9 +3,12 @@ package meeting.app.api.services;
 import lombok.extern.slf4j.Slf4j;
 import meeting.app.api.converters.CreateUserRequestToUserEntity;
 import meeting.app.api.exceptions.MeetingApiException;
+import meeting.app.api.model.user.ChangePasswordRequest;
 import meeting.app.api.model.user.CreateUserRequest;
+import meeting.app.api.model.user.ResetPasswordRequest;
 import meeting.app.api.model.user.UserEntity;
 import meeting.app.api.repositories.UserRepository;
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -101,6 +105,61 @@ public class UserService {
             log.info("user.service.activate.user.exception " + ex.getMessage());
             throw new MeetingApiException("msg.err.activate.user");
         }
+    }
+
+    public UserEntity resetPassword(ResetPasswordRequest request) {
+        Optional<UserEntity> user = userRepository.findByUsername(request.getUsername());
+
+        if (user.isEmpty()) {
+            throw new MeetingApiException("msg.err.user.not.found");
+        }
+
+        if (!user.get().getUsername().equals(request.getUsername())) {
+            throw new MeetingApiException("msg.err.email.not.equal");
+        }
+
+        String newPassword = generateRandomPassword();
+
+        try {
+            UUID uuid = UUID.randomUUID();
+            user.get().setPassword(passwordEncoder.encode(newPassword));
+            user.get().setResetPasswordUUID(uuid);
+            return userRepository.save(user.get());
+        } catch (Exception ex) {
+            log.info("user.service.reset.password.and.send.email.user.exception " + ex.getMessage());
+            throw new MeetingApiException("msg.err.reset.password");
+        }
+    }
+
+    public void changePasswordFromLink(String uuid, String userId, ChangePasswordRequest request) {
+        UserEntity userEntity = userRepository.getById(Long.valueOf(userId));
+
+        if (userEntity == null) {
+            throw new MeetingApiException("msg.err.user.not.found");
+        }
+        if (!userEntity.getUsername().equals(request.getUsername())) {
+            throw new MeetingApiException("msg.err.incorrect.username");
+        }
+        if (userEntity.getResetPasswordUUID() == null || !uuid.equals(userEntity.getResetPasswordUUID().toString())) {
+            throw new MeetingApiException("msg.err.user.change.password.no.request");
+        }
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new MeetingApiException("msg.err.invalid.password");
+        }
+
+        try {
+            userEntity.setPassword(passwordEncoder.encode(request.getPassword()));
+            userEntity.setResetPasswordUUID(null);
+            userRepository.save(userEntity);
+        } catch (Exception ex) {
+            log.info("msg.err.change.password.from.link.exception " + ex.getMessage());
+            throw new MeetingApiException("msg.err.change.password.from.link.error");
+        }
+    }
+
+    public String generateRandomPassword() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+        return RandomStringUtils.random( 15, characters );
     }
 
     public UserEntity getUserById(Long id) {
