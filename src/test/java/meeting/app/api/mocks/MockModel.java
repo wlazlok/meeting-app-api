@@ -10,7 +10,7 @@ import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.event.EventItemListElement;
 import meeting.app.api.model.event.EventItemResponse;
 import meeting.app.api.model.rating.RatingItem;
-import meeting.app.api.model.user.UserEntity;
+import meeting.app.api.model.user.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,6 +125,34 @@ public class MockModel {
         return EventItemResponse.builder()
                 .eventItem(Arrays.asList(eventItem))
                 .errorMessage(null)
+                .build();
+    }
+    
+    public static CreateUserResponse generateCreateUserResponse() {
+        return new CreateUserResponse();
+    }
+
+    public static CreateUserRequest generateCreateUserRequest() {
+        return CreateUserRequest.builder()
+                .username("test")
+                .email("test@email.com")
+                .password("test")
+                .confirmPassword("test")
+                .build();
+    }
+
+    public static ResetPasswordRequest generateResetPasswordRequest() {
+        return ResetPasswordRequest.builder()
+                .username("test")
+                .email("test@email.com")
+                .build();
+    }
+
+    public static ChangePasswordRequest generateChangePasswordRequest() {
+        return ChangePasswordRequest.builder()
+                .username("test")
+                .password("test123")
+                .confirmPassword("test123")
                 .build();
     }
 }

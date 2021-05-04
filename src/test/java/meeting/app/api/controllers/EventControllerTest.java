@@ -214,4 +214,54 @@ public class EventControllerTest extends ControllerMockConfig {
         assertNotNull(response.getErrorMessage());
         verify(userService, times(0)).getUserFromContext();
     }
+
+    /**
+     * joinToEvent()
+     */
+
+    @Test
+    void joinToEventPass() throws Exception {
+        UserEntity userEntity = generateUserEntity();
+        EventItemResponse eventItemResponse = generateEventItemResponse();
+        String eventId = "5";
+
+        when(userService.getUserFromContext()).thenReturn(userEntity);
+        when(eventService.joinToEvent(anyString(), any(UserEntity.class))).thenReturn(eventItemResponse);
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/join/{eventId}", eventId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        EventItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventItemResponse.class);
+
+        assertNotNull(response);
+        assertNull(response.getErrorMessage());
+        verify(userService, times(1)).getUserFromContext();
+        verify(eventService, times(1)).joinToEvent(anyString(), any(UserEntity.class));
+    }
+
+    @Test
+    void joinToEventThrowException() throws Exception {
+        UserEntity userEntity = generateUserEntity();
+        EventItemResponse eventItemResponse = generateEventItemResponse();
+        String eventId = "5";
+
+        when(userService.getUserFromContext()).thenReturn(userEntity);
+        given(eventService.joinToEvent(anyString(), any(UserEntity.class))).willAnswer(invocationOnMock -> {
+            throw new Exception();
+        });
+
+        MvcResult mvcResult = mockMvc.perform(post(PATH + "/join/{eventId}", eventId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        EventItemResponse response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventItemResponse.class);
+
+        assertNotNull(response);
+        assertNotNull(response.getErrorMessage());
+        verify(userService, times(1)).getUserFromContext();
+        verify(eventService, times(1)).joinToEvent(anyString(), any(UserEntity.class));
+    }
 }
