@@ -2,7 +2,9 @@ package meeting.app.api.services;
 
 import lombok.extern.slf4j.Slf4j;
 import meeting.app.api.converters.CreateUserRequestToUserEntity;
+import meeting.app.api.converters.EventItemToEventItemListElement;
 import meeting.app.api.exceptions.MeetingApiException;
+import meeting.app.api.model.event.EventItemListElement;
 import meeting.app.api.model.user.ChangePasswordRequest;
 import meeting.app.api.model.user.CreateUserRequest;
 import meeting.app.api.model.user.ResetPasswordRequest;
@@ -34,6 +36,9 @@ public class UserService {
 
     @Autowired
     private CreateUserRequestToUserEntity createUserRequestToUserEntity;
+
+    @Autowired
+    private EventItemToEventItemListElement eventItemToEventItemListElement;
 
     public UserEntity getUserFromContext() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -160,9 +165,23 @@ public class UserService {
         }
     }
 
+    public List<EventItemListElement> getUserEvents(UserEntity userEntity) {
+        List<EventItemListElement> events;
+
+        try {
+            events = userEntity.getEvents().stream()
+                    .map(eventItemToEventItemListElement::convert)
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            log.info("msg.err.get.events.for.user.exception " + ex.getMessage());
+            throw new MeetingApiException("msg.err.get.events.for.user");
+        }
+        return events;
+    }
+
     public String generateRandomPassword() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
-        return RandomStringUtils.random( 15, characters );
+        return RandomStringUtils.random(15, characters);
     }
 
     public UserEntity getUserById(Long id) {
