@@ -6,27 +6,25 @@ import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.event.EventItemListElement;
 import meeting.app.api.model.event.EventItemResponse;
 import meeting.app.api.model.user.UserEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static meeting.app.api.mocks.MockModel.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class EventServiceTest extends ServiceMockConfig {
 
     @InjectMocks
     private EventService underTest;
-
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * getAllEvents()

@@ -8,8 +8,9 @@ import meeting.app.api.model.comment.CommentItemResponse;
 import meeting.app.api.model.user.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 public class CommentControllerTest extends ControllerMockConfig {
 
     private final String PATH = "/api/comment";
@@ -39,8 +41,6 @@ public class CommentControllerTest extends ControllerMockConfig {
 
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
-
         mockMvc = MockMvcBuilders.standaloneSetup(commentController).build();
     }
 
@@ -169,7 +169,8 @@ public class CommentControllerTest extends ControllerMockConfig {
 
         given(commentService.getCommentsForEvent(anyLong())).willAnswer(invocationOnMock -> {
             throw new Exception("exception");
-        });;
+        });
+        ;
 
         MvcResult mvcResult = mockMvc.perform(get(PATH + "/event/{eventId}", eventId)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -220,7 +221,8 @@ public class CommentControllerTest extends ControllerMockConfig {
         when(userService.getUserFromContext()).thenReturn(userEntity);
         given(commentService.addCommentToEvent(anyString(), anyLong(), any(UserEntity.class))).willAnswer(invocationOnMock -> {
             throw new Exception("exception");
-        });;
+        });
+        ;
 
         MvcResult mvcResult = mockMvc.perform(post(PATH + "/add")
                 .contentType(MediaType.APPLICATION_JSON)

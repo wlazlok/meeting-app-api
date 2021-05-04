@@ -9,8 +9,9 @@ import meeting.app.api.model.event.EventItemResponse;
 import meeting.app.api.model.user.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 public class EventControllerTest extends ControllerMockConfig {
 
     private final String PATH = "/api/event";
@@ -39,8 +41,6 @@ public class EventControllerTest extends ControllerMockConfig {
 
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
-
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
@@ -137,7 +137,7 @@ public class EventControllerTest extends ControllerMockConfig {
     /**
      * addRatingToEvent()
      */
-    
+
     @Test
     void addRatingToEventPass() throws Exception {
         Integer rating = 5;
@@ -214,4 +214,4 @@ public class EventControllerTest extends ControllerMockConfig {
         assertNotNull(response.getErrorMessage());
         verify(userService, times(0)).getUserFromContext();
     }
- }
+}

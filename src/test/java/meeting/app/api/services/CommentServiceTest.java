@@ -5,10 +5,10 @@ import meeting.app.api.model.comment.CommentItem;
 import meeting.app.api.model.comment.CommentItemResponse;
 import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.user.UserEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,17 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-;
-
+@ExtendWith(MockitoExtension.class)
 public class CommentServiceTest extends ServiceMockConfig {
 
     @InjectMocks
     private CommentService underTest;
-
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * getAllComments() method

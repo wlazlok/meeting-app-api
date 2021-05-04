@@ -4,10 +4,10 @@ import meeting.app.api.ServiceMockConfig;
 import meeting.app.api.model.category.CartCategoryItem;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.category.CategoryItemResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,15 +18,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest extends ServiceMockConfig {
 
     @InjectMocks
     private CategoryService underTest;
-
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * saveCategory() method

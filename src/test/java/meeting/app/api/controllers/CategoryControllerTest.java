@@ -7,8 +7,9 @@ import meeting.app.api.model.category.CartCategoryItemResponse;
 import meeting.app.api.model.category.CategoryItemResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 public class CategoryControllerTest extends ControllerMockConfig {
 
     private final String PATH = "/api/category";
@@ -38,8 +40,6 @@ public class CategoryControllerTest extends ControllerMockConfig {
 
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
-
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
