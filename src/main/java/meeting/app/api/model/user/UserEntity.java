@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import meeting.app.api.configuration.security.Role;
 import meeting.app.api.model.comment.CommentItem;
+import meeting.app.api.model.event.EventItem;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
@@ -100,4 +101,13 @@ public class UserEntity implements UserDetails {
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "events",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private List<EventItem> events = new ArrayList<>();
 }

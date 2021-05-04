@@ -12,6 +12,7 @@ import meeting.app.api.model.user.UserEntity;
 import meeting.app.api.repositories.CategoryItemRepository;
 import meeting.app.api.repositories.EventItemRepository;
 import meeting.app.api.repositories.RatingItemRepository;
+import meeting.app.api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,9 @@ public class EventService {
 
     @Autowired
     private RatingItemRepository ratingItemRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<EventItem> getAllEvents() {
         List<EventItem> events = new ArrayList<>();
@@ -101,6 +105,29 @@ public class EventService {
         } catch (Exception ex) {
             log.info("event.service.add.rating.to.event.exception {}", ex.getMessage());
             throw new MeetingApiException("msg.err.event.add.rating");
+        }
+    }
+
+    public EventItemResponse joinToEvent(String eventId, UserEntity user) {
+        EventItem eventItem = eventItemRepository.getById(Long.valueOf(eventId));
+        EventItemResponse response = new EventItemResponse();
+
+        if (user == null || eventItem == null) {
+            throw new MeetingApiException("msg.err.user.or.event.not.found");
+        }
+        if (eventItem.getActiveParticipants().contains(user)) {
+            throw new MeetingApiException("user.joined.joined");
+        }
+
+        try {
+            eventItem.getActiveParticipants().add(user);
+            user.getEvents().add(eventItem);
+            EventItem saved = eventItemRepository.save(eventItem);
+            response.setEventItem(Arrays.asList(saved));
+            return response;
+        } catch (Exception ex) {
+            log.info("event.service.join.event.exception {}", ex.getMessage());
+            throw new MeetingApiException("msg.err.join.event");
         }
     }
 

@@ -115,6 +115,9 @@ public class UserService {
         }
 
         if (!user.get().getUsername().equals(request.getUsername())) {
+            throw new MeetingApiException("msg.err.user.not.equal");
+        }
+        if (!user.get().getEmail().equals(request.getEmail())) {
             throw new MeetingApiException("msg.err.email.not.equal");
         }
 

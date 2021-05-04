@@ -65,4 +65,16 @@ public class EventController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @PostMapping("/join/{eventId}")
+    public ResponseEntity<EventItemResponse> joinToEvent(@PathVariable String eventId) {
+        try {
+            UserEntity userEntity = userService.getUserFromContext();;
+            return ResponseEntity.ok().body(eventService.joinToEvent(eventId, userEntity));
+        } catch (Exception ex) {
+            EventItemResponse response = new EventItemResponse();
+            response.setErrorMessage(mapErrorMessage(ex));
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

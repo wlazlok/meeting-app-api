@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import meeting.app.api.model.category.CategoryItem;
 import meeting.app.api.model.comment.CommentItem;
 import meeting.app.api.model.rating.RatingItem;
+import meeting.app.api.model.user.UserEntity;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -37,10 +38,11 @@ public class EventItem {
 
     @NotNull(message = "msg.err.event.item.date.is.null")
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
-    @DateTimeFormat(pattern = "dd-MM-yyyy dd-MM-yyyy HH:mm")
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     private Date date;
 
-    //todo uczestnicy List<User> jako activeParticipants
+    @ManyToMany(mappedBy = "events", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private List<UserEntity> activeParticipants = new ArrayList<>();
 
     @NotBlank(message = "msg.err.event.item.description.is.blank")
     private String description;

@@ -1,6 +1,9 @@
 package meeting.app.api.services;
 
+import meeting.app.api.model.event.EventItem;
 import meeting.app.api.model.user.UserEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
@@ -13,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+@EnableAsync
 @Service
 public class EmailService {
 
@@ -20,6 +24,7 @@ public class EmailService {
     private final String from = "";
     private final String password = "";
 
+    @Async
     public void sendActivateEmail(UserEntity user, String path) {
         Session session = setUp();
 
@@ -44,6 +49,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendResetEmail(UserEntity user, String path) {
         Session session = setUp();
 
@@ -64,6 +70,37 @@ public class EmailService {
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
         } catch (MessagingException | MalformedURLException ae) {
+            ae.printStackTrace();
+        }
+    }
+
+    @Async
+    public void sendEventNotification(String[] to, EventItem eventItem) {
+        Session session = setUp();
+
+        MimeMessage message = new MimeMessage(session);
+
+        try {
+            message.setFrom(new InternetAddress(from));
+            InternetAddress[] toAddress = new InternetAddress[to.length];
+
+            for (int i = 0; i < to.length; i++) {
+                toAddress[i] = new InternetAddress(to[i]);
+            }
+            for (InternetAddress address : toAddress) {
+                message.addRecipient(Message.RecipientType.TO, address);
+            }
+
+            message.setSubject("Nadchodzące wydarzenia");
+            message.setText("Twoje zbliżające się wydarzenia: \n" + eventItem.getDescription() + " - " +  eventItem.getDate() + " - "
+                    + eventItem.getCity() + " " + eventItem.getStreet());
+
+            Transport transport = session.getTransport("smtp");
+
+            transport.connect(host, from, password);
+            transport.sendMessage(message, message.getAllRecipients());
+            transport.close();
+        } catch (MessagingException ae) {
             ae.printStackTrace();
         }
     }
