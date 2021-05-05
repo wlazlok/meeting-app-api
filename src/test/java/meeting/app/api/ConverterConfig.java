@@ -15,4 +15,7 @@ public class ConverterConfig {
 
     @Autowired
     protected EventItemToEventItemListElement eventItemToEventItemListElement;
+
+    @Autowired
+    protected CreateUserRequestToUserEntity createUserRequestToUserEntity;
 }

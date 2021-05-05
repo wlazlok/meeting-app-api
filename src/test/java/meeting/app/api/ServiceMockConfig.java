@@ -2,9 +2,11 @@ package meeting.app.api;
 
 import meeting.app.api.converters.CategoryItemToCartCategoryItem;
 import meeting.app.api.converters.CategoryItemToCategoryItemResponse;
+import meeting.app.api.converters.CreateUserRequestToUserEntity;
 import meeting.app.api.converters.EventItemToEventItemListElement;
 import meeting.app.api.repositories.*;
 import org.mockito.Mock;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ServiceMockConfig {
 
@@ -31,4 +33,10 @@ public class ServiceMockConfig {
 
     @Mock
     protected RatingItemRepository ratingItemRepository;
+
+    @Mock
+    protected CreateUserRequestToUserEntity createUserRequestToUserEntity;
+
+    @Mock
+    protected PasswordEncoder passwordEncoder;
 }

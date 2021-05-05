@@ -71,6 +71,7 @@ public class MockModel {
                 .comments(Arrays.asList(new CommentItem()))
                 .categoryId(generateCategoryItem())
                 .ratings(new ArrayList<>())
+                .activeParticipants(new ArrayList<>())
                 .build();
     }
 
@@ -97,6 +98,8 @@ public class MockModel {
                 .isAccountNonLocked(true)
                 .isCredentialsNonExpired(true)
                 .isEnabled(true)
+                .email("test@email.com")
+                .events(new ArrayList<>())
                 .build();
     }
 

@@ -174,4 +174,93 @@ public class EventServiceTest extends ServiceMockConfig {
             verify(eventItemRepository, times(0)).save(any(EventItem.class));
         }
     }
+
+    /**
+     * joinToEvent()
+     */
+
+    @Test
+    void joinToEventOk() {
+        String eventId = "5";
+        UserEntity userEntity = generateUserEntity();
+        EventItem eventItem = generateEventItem();
+
+        when(eventItemRepository.getById(anyLong())).thenReturn(eventItem);
+        when(eventItemRepository.save(any(EventItem.class))).thenReturn(eventItem);
+
+        EventItemResponse result = underTest.joinToEvent(eventId, userEntity);
+
+        assertNotNull(result);
+        verify(eventItemRepository, times(1)).getById(anyLong());
+        verify(eventItemRepository, times(1)).save(any(EventItem.class));
+    }
+
+    @Test
+    void joinToEventUserIsNull() {
+        String eventId = "5";
+        EventItem eventItem = generateEventItem();
+
+        when(eventItemRepository.getById(anyLong())).thenReturn(eventItem);
+
+        try {
+            underTest.joinToEvent(eventId, null);
+            fail("Should throw exception");
+        } catch (Exception ex) {
+            verify(eventItemRepository, times(1)).getById(anyLong());
+            verify(eventItemRepository, times(0)).save(any(EventItem.class));
+        }
+    }
+
+    @Test
+    void joinToEventUserEventItemIsNull() {
+        String eventId = "5";
+
+        when(eventItemRepository.getById(anyLong())).thenReturn(null);
+
+        try {
+            underTest.joinToEvent(eventId, null);
+            fail("Should throw exception");
+        } catch (Exception ex) {
+            verify(eventItemRepository, times(1)).getById(anyLong());
+            verify(eventItemRepository, times(0)).save(any(EventItem.class));
+        }
+    }
+
+    @Test
+    void joinToEventUserAlreadyIsParticipant() {
+        String eventId = "5";
+        UserEntity userEntity = generateUserEntity();
+        EventItem eventItem = generateEventItem();
+        eventItem.getActiveParticipants().add(userEntity);
+
+        when(eventItemRepository.getById(anyLong())).thenReturn(eventItem);
+
+        try {
+            underTest.joinToEvent(eventId, userEntity);
+            fail("Should throw exception");
+        } catch (Exception ex) {
+            verify(eventItemRepository, times(1)).getById(anyLong());
+            verify(eventItemRepository, times(0)).save(any(EventItem.class));
+        }
+    }
+
+    @Test
+    void joinToEventThrowException() {
+        String eventId = "5";
+        UserEntity userEntity = generateUserEntity();
+        EventItem eventItem = generateEventItem();
+
+        when(eventItemRepository.getById(anyLong())).thenReturn(eventItem);
+        given(eventItemRepository.save(any(EventItem.class))).willAnswer(invocationOnMock -> {
+            throw new Exception();
+        });
+
+        try {
+            underTest.joinToEvent(eventId, userEntity);
+            fail("Should throw exception");
+        } catch (Exception ex) {
+            verify(eventItemRepository, times(1)).getById(anyLong());
+            verify(eventItemRepository, times(1)).save(any(EventItem.class));
+        }
+    }
 }
