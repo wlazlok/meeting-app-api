@@ -2,14 +2,12 @@ package meeting.app.api.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import meeting.app.api.model.event.EventItemListElementResponse;
-import meeting.app.api.model.event.EventItemResponse;
 import meeting.app.api.model.user.*;
 import meeting.app.api.model.utils.ErrorMessage;
 import meeting.app.api.services.EmailService;
 import meeting.app.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
